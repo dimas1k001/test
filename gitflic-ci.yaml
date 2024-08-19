@@ -1,34 +1,25 @@
-# Данный файл - шаблонная конфигурация CI/CD конвейера. Он может быть изменен по Вашему усмотрению. 
-# Некоторые шаблоны требуют предварительной настройки перед запуском.
-#
-# Подробнее о синтаксисе можно узнать в документации:
-# https://docs.gitflic.space/cicd/gitflic-ci-yaml
 image: ubuntu:latest
 
-stages:
-  - build
-  - test
-  - deploy
-
-variables:
-  # Общие переменные
-  APP_NAME: "my-awesome-app"
-  TIMESTAMP: $(date +%Y%m%d%H%M%S)
-
-build:
-  stage: build
-  script:
-    - echo "Сборка приложения $APP_NAME"
-    - echo "Текущее время $TIMESTAMP"
-
-test:
+test_job:
   stage: test
   script:
-    - echo "Запуск тестов для $APP_NAME"
-    - echo "Время запуска $TIMESTAMP"
-
-deploy:
-  stage: deploy
-  script:
-    - echo "Деплой приложения $APP_NAME"
-    - echo "Время деплоя $TIMESTAMP"
+    - |
+      echo "env:$env"
+      if [ "$env" == "dev" ];
+      then
+        NOTIFICATION_WEBHOOK_URL="dev!!"
+      else 
+        if [ "$env" == "stage" ];
+        then
+          NOTIFICATION_WEBHOOK_URL="stage!!"
+        else 
+          if [ "$env" == "prod" ];
+          then
+            NOTIFICATION_WEBHOOK_URL="prod!!"
+          else
+            echo 'error - target env not detected'
+            exit 1
+          fi
+        fi
+      fi
+      echo $NOTIFICATION_WEBHOOK_URL
