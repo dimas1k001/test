@@ -4,23 +4,23 @@ test_job:
   stage: test
   script:
     - |
-      env=dev
-      echo "env:$env"
-      if [ "$env" == "dev" ];
-      then
-        NOTIFICATION_WEBHOOK_URL="dev!!"
-      else 
-        if [ "$env" == "stage" ];
-        then
+      env="dev"
+      echo "env: $env"
+      
+      case "$env" in
+        dev)
+          NOTIFICATION_WEBHOOK_URL="dev!!"
+          ;;
+        stage)
           NOTIFICATION_WEBHOOK_URL="stage!!"
-        else 
-          if [ "$env" == "prod" ];
-          then
-            NOTIFICATION_WEBHOOK_URL="prod!!"
-          else
-            echo 'error - target env not detected'
-            exit 1
-          fi
-        fi
-      fi
+          ;;
+        prod)
+          NOTIFICATION_WEBHOOK_URL="prod!!"
+          ;;
+        *)
+          echo 'error - target env not detected'
+          exit 1
+          ;;
+      esac
+
       echo $NOTIFICATION_WEBHOOK_URL
