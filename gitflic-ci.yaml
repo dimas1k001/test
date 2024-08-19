@@ -3,19 +3,32 @@
 #
 # Подробнее о синтаксисе можно узнать в документации:
 # https://docs.gitflic.space/cicd/gitflic-ci-yaml
-
 image: ubuntu:latest
 
 stages:
-  - test
   - build
+  - test
   - deploy
 
 variables:
-  VAR: $TEST_VAR
+  # Общие переменные
+  APP_NAME: "my-awesome-app"
+  TIMESTAMP: $(date +%Y%m%d%H%M%S)
 
 build:
   stage: build
   script:
-    - echo "$TEST_VAR"
+    - echo "Сборка приложения $APP_NAME"
+    - echo "Текущее время $TIMESTAMP"
 
+test:
+  stage: test
+  script:
+    - echo "Запуск тестов для $APP_NAME"
+    - echo "Время запуска $TIMESTAMP"
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Деплой приложения $APP_NAME"
+    - echo "Время деплоя $TIMESTAMP"
