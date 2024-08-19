@@ -17,5 +17,5 @@ variables:
 build:
   stage: build
   script:
-    - echo "$VAR"
+    - echo "$TEST_VAR"
 
