@@ -11,9 +11,11 @@ stages:
   - build
   - deploy
 
+variables:
+  VAR: $TEST_VAR
+
 build:
   stage: build
   script:
-    - echo "$CI_COMMIT_MESSAGE"
-    - echo "$CI_COMMIT_REF_NAME"
+    - echo "$VAR"
 
