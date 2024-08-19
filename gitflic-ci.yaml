@@ -15,4 +15,5 @@ build:
   stage: build
   script:
     - echo "$CI_COMMIT_MESSAGE"
+    - echo "$CI_COMMIT_REF_NAME"
 
