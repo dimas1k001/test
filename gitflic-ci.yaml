@@ -4,6 +4,7 @@ test_job:
   stage: test
   script:
     - |
+      env=dev
       echo "env:$env"
       if [ "$env" == "dev" ];
       then
