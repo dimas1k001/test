@@ -3,9 +3,6 @@ stages:
   - test
   - deploy
 
-# Включение локального файла конфигурации
-include:
-  - local: 'local-config.yaml'
 
 # Образ для выполнения задач
 image: alpine:latest
@@ -31,6 +28,15 @@ build_job:
   artifacts:
     paths:
       - build/
+  
+trigger-job:
+  trigger:
+    include:
+      - local: local-config.yaml
+    strategy: depend
+    forward: 
+      yaml_variables: true
+      pipeline_variables: true
 
 
 # Этап тестирования
@@ -87,7 +93,7 @@ excluded_job:
   script:
     - echo "This job should not run on merge requests"
   except:
-    - merge_requests
+    - master
   tags:
     - test
 
