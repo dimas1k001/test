@@ -5,9 +5,7 @@ stages:
   - deploy
 
 include:
-  - local: '.gitlab-ci-local.yml'
-  - remote: 'https://example.com/gitlab-ci-remote.yml'
-  - project: 'mygroup/myproject'
+  - local: '.gitflic-ci2.yaml'
 
 image: python:3.9
 

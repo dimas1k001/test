@@ -1,0 +1,30 @@
+variables:
+  LOCAL_VARIABLE: "This is a local variable"
+  LOCAL_ENV: "development"
+
+stages:
+  - lint
+  - test
+
+lint:
+  stage: lint
+  script:
+    - echo "Running linting process"
+    - pylint my_project/
+  artifacts:
+    paths:
+      - lint-reports/
+
+test:
+  stage: test
+  script:
+    - echo "Running unit tests"
+    - pytest --junitxml=test-reports.xml
+  artifacts:
+    paths:
+      - test-reports/
+    reports:
+      junit: test-reports.xml
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "feature/*"'
+      when: manual
