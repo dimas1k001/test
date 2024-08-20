@@ -1,6 +1,8 @@
 # local-config.yaml
 
 # Дополнительный этап
+image: alpine:latest
+
 extra_check_job:
   stage: test
   script:

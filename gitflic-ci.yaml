@@ -110,7 +110,7 @@ excluded_job:
 conditional_job:
   stage: test
   script:
-    - echo "Running conditionally based on rules"
+    - echo "rules"
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /run conditional job/'
       when: on_success
