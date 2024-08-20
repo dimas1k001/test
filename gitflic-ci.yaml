@@ -57,7 +57,7 @@ test_job:
         paths:
         - surefire-reports/*
   rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_COMMIT_REF_NAME == "master"'
       when: always
     - if: '$CI_COMMIT_MESSAGE =~ /skip tests/'
       allow_failure: true
@@ -114,7 +114,7 @@ conditional_job:
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /run conditional job/'
       when: on_success
-    - if: '$CI_COMMIT_BRANCH == "feature/*"'
+    - if: '$CI_COMMIT_REF_NAME == "feature/*"'
       allow_failure: true
   tags:
     - test
