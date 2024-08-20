@@ -75,13 +75,13 @@ deploy:
     - echo "Running deployment script"
   tags:
     - deploy
-  only:
-    - master
-  except:
-    - tags
+
+trigger_deploy:
+  stage: deploy
   trigger:
     project: mygroup/anotherproject
     branch: master
-  extends:
-    - .deploy-template
+  tags:
+    - deploy
+  needs: ["deploy"]
 
