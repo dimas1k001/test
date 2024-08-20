@@ -12,11 +12,10 @@ image: alpine:latest
 
 # Кэширование зависимостей
 cache:
-  key: ${CI_COMMIT_REF_SLUG}
   paths:
     - .cache/
     - node_modules/
-    - 
+    - surefire-reports/*
 
 # Глобальные переменные
 variables:
@@ -32,10 +31,7 @@ build_job:
   artifacts:
     paths:
       - build/
-    reports:
-      junit:
-        paths:
-        - surefire-reports/*
+
 
 # Этап тестирования
 test_job:
@@ -51,14 +47,15 @@ test_job:
     paths:
       - test-reports/
     reports:
-      junit: test-reports/test-results.xml
+      junit:
+        paths:
+        - surefire-reports/*
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "master"'
       when: always
     - if: '$CI_COMMIT_MESSAGE =~ /skip tests/'
       allow_failure: true
-  tags:
-    - test
+
 
 # Этап деплоя
 deploy_job:
@@ -70,14 +67,12 @@ deploy_job:
   artifacts:
     paths:
       - deploy/
-    name: "deploy-${CI_COMMIT_REF_SLUG}"
+    name: "deploy-$GLOBAL_VAR"
   only:
-    - main
+    - master
   needs:
     - build_job
-  trigger:
-    include:
-      - local: 'trigger-config.yml'
+
 
 # Пример задачи с расширением
 extended_job:
