@@ -55,7 +55,7 @@ test_job:
     reports:
       junit:
         paths:
-        - surefire-reports/*
+        - /surefire-reports/*
   rules:
     - if: '$CI_COMMIT_REF_NAME == "master"'
       when: always
@@ -91,9 +91,9 @@ extended_job:
 excluded_job:
   stage: test
   script:
-    - echo "This job should not run on merge requests"
+    - echo "This job should not run on branch dev"
   except:
-    - master
+    - dev
   tags:
     - test
 
