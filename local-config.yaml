@@ -1,6 +1,6 @@
 # local-config.yaml
 
-# Дополнительный этап для дополнительной проверки
+# Дополнительный этап
 extra_check_job:
   stage: test
   script:
@@ -10,11 +10,6 @@ extra_check_job:
   artifacts:
     paths:
       - extra-check/
-    reports:
-      junit: extra-check/test-results.xml
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master/*"'
-      when: always
   tags:
     - test
 
