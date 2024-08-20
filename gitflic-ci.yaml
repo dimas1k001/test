@@ -1,81 +1,119 @@
 stages:
-  - prepare
   - build
   - test
   - deploy
 
-image: python:3.9
+# Включение локального файла конфигурации
+include:
+  - local: 'local-config.yaml'
 
+# Образ для выполнения задач
+image: alpine:latest
+
+# Кэширование зависимостей
 cache:
+  key: ${CI_COMMIT_REF_SLUG}
   paths:
-    - venv/
-    - .cache/pip
+    - .cache/
+    - node_modules/
+    - 
 
+# Глобальные переменные
 variables:
-  ENVIRONMENT: production
-  DEBUG: "false"
+  GLOBAL_VAR: "value"
 
-before_script:
-  - echo "Setting up environment"
-  - python -m venv venv
-  - source venv/bin/activate
-
-after_script:
-  - echo "Cleanup"
-  - deactivate
-
-prepare:
-  stage: prepare
-  script:
-    - echo "Preparing the environment"
-    - pip install -r requirements.txt
-  artifacts:
-    paths:
-      - venv/
-    name: "prepare_artifacts"
-
-build:
+# Этап сборки
+build_job:
   stage: build
   script:
     - echo "Building the project"
-    - python setup.py build
+    - mkdir -p build
+    - echo "Build content" > build/build.txt
   artifacts:
     paths:
       - build/
-    name: "build_artifacts"
     reports:
-      junit: build/test-reports.xml
-  needs: ["prepare"]
+      junit:
+        paths:
+        - surefire-reports/*
 
-test:
+# Этап тестирования
+test_job:
   stage: test
+  image: python:3.8
+  before_script:
+    - echo "Setting up test environment"
   script:
     - echo "Running tests"
-    - pytest --junitxml=build/test-reports.xml
+    - mkdir -p test-reports
+    - echo "Test report content" > test-reports/test-report.txt
   artifacts:
     paths:
-      - build/test-reports.xml
-  when: on_success
+      - test-reports/
+    reports:
+      junit: test-reports/test-results.xml
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "master"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
       when: always
-    - if: '$CI_COMMIT_REF_NAME == "develop"'
+    - if: '$CI_COMMIT_MESSAGE =~ /skip tests/'
       allow_failure: true
+  tags:
+    - test
 
-deploy:
+# Этап деплоя
+deploy_job:
   stage: deploy
   script:
-    - echo "Deploying to $ENVIRONMENT"
-    - echo "Running deployment script"
-  tags:
-    - deploy
-
-trigger_deploy:
-  stage: deploy
+    - echo "Deploying the project"
+    - mkdir -p deploy
+    - echo "Deploy content" > deploy/deploy.txt
+  artifacts:
+    paths:
+      - deploy/
+    name: "deploy-${CI_COMMIT_REF_SLUG}"
+  only:
+    - main
+  needs:
+    - build_job
   trigger:
-    project: mygroup/anotherproject
-    branch: master
-  tags:
-    - deploy
-  needs: ["deploy"]
+    include:
+      - local: 'trigger-config.yml'
 
+# Пример задачи с расширением
+extended_job:
+  extends: .common_template
+  stage: test
+  script:
+    - echo "This job extends a common template"
+
+# Пример задачи с исключением
+excluded_job:
+  stage: test
+  script:
+    - echo "This job should not run on merge requests"
+  except:
+    - merge_requests
+  tags:
+    - test
+
+# Шаблон для расширения
+.common_template:
+  before_script:
+    - echo "This is a common setup"
+  after_script:
+    - echo "This is a common teardown"
+  variables:
+    COMMON_VAR: "common_value"
+
+# Дополнительные правила и исключения
+conditional_job:
+  stage: test
+  script:
+    - echo "Running conditionally based on rules"
+  rules:
+    - if: '$CI_COMMIT_MESSAGE =~ /run conditional job/'
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH == "feature/*"'
+      allow_failure: true
+  tags:
+    - test

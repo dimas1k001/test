@@ -1,0 +1,30 @@
+# local-config.yaml
+
+# Дополнительный этап для дополнительной проверки
+extra_check_job:
+  stage: test
+  script:
+    - echo "Running extra check"
+    - mkdir -p extra-check
+    - echo "Extra check result" > extra-check/check.txt
+  artifacts:
+    paths:
+      - extra-check/
+    reports:
+      junit: extra-check/test-results.xml
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "feature/*"'
+      when: always
+  tags:
+    - test
+
+# Пример задачи для триггера другого пайплайна
+trigger_another_pipeline:
+  stage: deploy
+  trigger:
+    project: 'another-group/another-project'
+    branch: main
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  tags:
+    - deploy
