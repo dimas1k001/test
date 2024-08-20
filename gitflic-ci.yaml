@@ -7,7 +7,6 @@ stages:
 image: python:3.9
 
 cache:
-  key: my-cache-key
   paths:
     - venv/
     - .cache/pip
