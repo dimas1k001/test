@@ -113,7 +113,7 @@ conditional_job:
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /run conditional job/'
       when: on_success
-    - if: '$CI_COMMIT_REF_NAME == "feature/*"'
+    - if: '$CI_COMMIT_REF_NAME == "dev/*"'
       allow_failure: true
   tags:
     - test
