@@ -1,21 +1,87 @@
-image: ubuntu:latest
+stages:
+  - prepare
+  - build
+  - test
+  - deploy
 
-test_job:
+include:
+  - local: '.gitlab-ci-local.yml'
+  - remote: 'https://example.com/gitlab-ci-remote.yml'
+  - project: 'mygroup/myproject'
+
+image: python:3.9
+
+cache:
+  key: my-cache-key
+  paths:
+    - venv/
+    - .cache/pip
+
+variables:
+  ENVIRONMENT: production
+  DEBUG: "false"
+
+before_script:
+  - echo "Setting up environment"
+  - python -m venv venv
+  - source venv/bin/activate
+
+after_script:
+  - echo "Cleanup"
+  - deactivate
+
+prepare:
+  stage: prepare
+  script:
+    - echo "Preparing the environment"
+    - pip install -r requirements.txt
+  artifacts:
+    paths:
+      - venv/
+    name: "prepare_artifacts"
+
+build:
+  stage: build
+  script:
+    - echo "Building the project"
+    - python setup.py build
+  artifacts:
+    paths:
+      - build/
+    name: "build_artifacts"
+    reports:
+      junit: build/test-reports.xml
+  needs: ["prepare"]
+
+test:
   stage: test
   script:
-    - |
-      env="dev"
-      echo "env: $env"
-      
-      if [ "$env" = "dev" ]; then
-        NOTIFICATION_WEBHOOK_URL="dev!!"
-      elif [ "$env" = "stage" ]; then
-        NOTIFICATION_WEBHOOK_URL="stage!!"
-      elif [ "$env" = "prod" ]; then
-        NOTIFICATION_WEBHOOK_URL="prod!!"
-      else
-        echo 'error - target env not detected'
-        exit 1
-      fi
-      
-      echo $NOTIFICATION_WEBHOOK_URL
+    - echo "Running tests"
+    - pytest --junitxml=build/test-reports.xml
+  artifacts:
+    paths:
+      - build/test-reports.xml
+  when: on_success
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
+      when: always
+    - if: '$CI_COMMIT_REF_NAME == "develop"'
+      allow_failure: true
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying to $ENVIRONMENT"
+    - echo "Running deployment script"
+  tags:
+    - deploy
+  only:
+    - master
+  except:
+    - tags
+  trigger:
+    project: mygroup/anotherproject
+    branch: master
+  extends:
+    - .deploy-template
+
