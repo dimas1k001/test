@@ -4,9 +4,6 @@ stages:
   - test
   - deploy
 
-include:
-  - local: '.gitflic-ci2.yaml'
-
 image: python:3.9
 
 cache:
