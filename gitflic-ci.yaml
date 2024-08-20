@@ -76,8 +76,7 @@ deploy_job:
     name: "deploy-$GLOBAL_VAR"
   only:
     - master
-  needs:
-    - build_job
+  needs: [ build_job ]
 
 
 # Пример задачи с расширением
