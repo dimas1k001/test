@@ -18,8 +18,7 @@ test_job:
     - echo "Test report content" > test-reports/test-report.txt
   artifacts:
     reports:
-      dependency_scanning:
-        paths:
-        - sampleCycloneDX.json
+      paths:
+      - sampleCycloneDX.json
 
 
