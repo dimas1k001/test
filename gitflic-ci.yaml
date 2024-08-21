@@ -19,6 +19,6 @@ test_job:
   artifacts:
     reports:
       paths:
-      - sampleCycloneDX.json
+      - spotbugsSarif.json
 
 
