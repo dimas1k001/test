@@ -1,24 +1,16 @@
 stages:
   - build
-  - test
-  - deploy
 
+build:
+  stage: build
+  script:
+    - echo "Build"
+    - mkdir -p test-reports
+    - echo "Building" > test-reports/test-report.txt
 
-# Образ для выполнения задач
-image: alpine:latest
-
-# Этап тестирования
-test_job:
-  stage: test
-  before_script:
-    - echo "Setting up test environment"
+test:
+  stage: build
   script:
     - echo "Running tests"
-    - mkdir -p test-reports
-    - echo "Test report content" > test-reports/test-report.txt
-  artifacts:
-    reports:
-      paths:
-      - spotbugsSarif.json
-
+  when: on_failure
 
