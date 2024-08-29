@@ -14,5 +14,4 @@ test:
   stage: build
   script:
     - echo "Running tests"
-  when: on_failure
-
+  when: on_success
